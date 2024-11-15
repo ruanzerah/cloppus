@@ -1,0 +1,15 @@
+inspired in x.com
+
+
+- Messages
+Create messages
+Edit messages
+Delete messages
+List messages from an user
+Reply messages
+Like messages
+
+- User
+Create user
+Delete user and associated messages
+
