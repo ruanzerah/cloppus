@@ -4,15 +4,15 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/ruanzerah/cloppus/internal/messages"
-	"github.com/ruanzerah/cloppus/internal/user"
+	msg "github.com/ruanzerah/cloppus/internal/messages/routes"
+	usr "github.com/ruanzerah/cloppus/internal/user/routes"
 )
 
 func InitAPI(addr string) error {
 	mux := http.NewServeMux()
 
-	user.HandleUserRoutes()
-	messages.HandleMessageRoutes()
+	usr.HandleUserRoutes()
+	msg.HandleMessageRoutes()
 
 	if addr == "" {
 		return fmt.Errorf("API address is not configured")

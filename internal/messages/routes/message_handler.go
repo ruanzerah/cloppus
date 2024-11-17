@@ -1,6 +1,8 @@
-package messages
+package routes
 
-import "net/http"
+import (
+	"net/http"
+)
 
 func HandleMessageRoutes() {
 	http.HandleFunc("POST /message", createMessage)
