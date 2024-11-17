@@ -1,4 +1,4 @@
-package messages
+package routes
 
 import "net/http"
 

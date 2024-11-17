@@ -1,4 +1,4 @@
-package user
+package routes
 
 import "net/http"
 
