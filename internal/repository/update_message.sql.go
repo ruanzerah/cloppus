@@ -11,20 +11,38 @@ import (
 	"github.com/google/uuid"
 )
 
-const updateMessage = `-- name: UpdateMessage :exec
+const updateMessage = `-- name: UpdateMessage :one
 UPDATE messages
-  SET subject = $2,
-  content = $3
-  WHERE id = $1
+  SET subject = $3,
+  content = $4
+  WHERE id = $1 AND owner = $2
+  RETURNING id, owner, subject, content, likes, created_at, updated_at, deleted_at
 `
 
 type UpdateMessageParams struct {
 	ID      uuid.UUID `json:"id"`
+	Owner   string    `json:"owner"`
 	Subject string    `json:"subject"`
 	Content string    `json:"content"`
 }
 
-func (q *Queries) UpdateMessage(ctx context.Context, arg UpdateMessageParams) error {
-	_, err := q.db.Exec(ctx, updateMessage, arg.ID, arg.Subject, arg.Content)
-	return err
+func (q *Queries) UpdateMessage(ctx context.Context, arg UpdateMessageParams) (Message, error) {
+	row := q.db.QueryRow(ctx, updateMessage,
+		arg.ID,
+		arg.Owner,
+		arg.Subject,
+		arg.Content,
+	)
+	var i Message
+	err := row.Scan(
+		&i.ID,
+		&i.Owner,
+		&i.Subject,
+		&i.Content,
+		&i.Likes,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.DeletedAt,
+	)
+	return i, err
 }

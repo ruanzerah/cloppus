@@ -7,21 +7,62 @@ package repository
 
 import (
 	"context"
+
+	"github.com/google/uuid"
 )
 
-const updateUser = `-- name: UpdateUser :exec
-INSERT INTO users (
-  username, email, hash
-) VALUES ( $1, $2 ,$3 )
+const changePassword = `-- name: ChangePassword :one
+UPDATE users
+  SET hash = $2
+WHERE id = $1
+RETURNING id, username, email, auth, hash, created_at, updated_at, deleted_at
 `
 
-type UpdateUserParams struct {
-	Username string `json:"username"`
-	Email    string `json:"email"`
-	Hash     string `json:"hash"`
+type ChangePasswordParams struct {
+	ID   uuid.UUID `json:"id"`
+	Hash string    `json:"hash"`
 }
 
-func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) error {
-	_, err := q.db.Exec(ctx, updateUser, arg.Username, arg.Email, arg.Hash)
-	return err
+func (q *Queries) ChangePassword(ctx context.Context, arg ChangePasswordParams) (User, error) {
+	row := q.db.QueryRow(ctx, changePassword, arg.ID, arg.Hash)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.Username,
+		&i.Email,
+		&i.Auth,
+		&i.Hash,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.DeletedAt,
+	)
+	return i, err
+}
+
+const renameUser = `-- name: RenameUser :one
+UPDATE users
+ SET username = $2
+WHERE id = $1
+RETURNING id, username, email, auth, hash, created_at, updated_at, deleted_at
+`
+
+type RenameUserParams struct {
+	ID       uuid.UUID `json:"id"`
+	Username string    `json:"username"`
+}
+
+func (q *Queries) RenameUser(ctx context.Context, arg RenameUserParams) (User, error) {
+	row := q.db.QueryRow(ctx, renameUser, arg.ID, arg.Username)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.Username,
+		&i.Email,
+		&i.Auth,
+		&i.Hash,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.DeletedAt,
+	)
+	return i, err
 }

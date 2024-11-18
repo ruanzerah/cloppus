@@ -7,16 +7,18 @@ package repository
 
 import (
 	"context"
+
+	"github.com/google/uuid"
 )
 
 const listMessages = `-- name: ListMessages :many
 SELECT id, owner, subject, content, likes, created_at, updated_at, deleted_at
   FROM messages
-  WHERE owner = $1
+  WHERE id = $1
 `
 
-func (q *Queries) ListMessages(ctx context.Context, owner string) ([]Message, error) {
-	rows, err := q.db.Query(ctx, listMessages, owner)
+func (q *Queries) ListMessages(ctx context.Context, id uuid.UUID) ([]Message, error) {
+	rows, err := q.db.Query(ctx, listMessages, id)
 	if err != nil {
 		return nil, err
 	}

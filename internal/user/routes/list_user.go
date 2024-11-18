@@ -6,10 +6,9 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/ruanzerah/cloppus/internal/repository"
-	"github.com/ruanzerah/cloppus/pkg"
 )
 
-func deleteUser(w http.ResponseWriter, r *http.Request) {
+func listUser(w http.ResponseWriter, r *http.Request) {
 	db := &repository.Queries{}
 	pathID := r.PathValue("id")
 
@@ -19,17 +18,16 @@ func deleteUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = db.DeleteUser(r.Context(), userID)
+	user, err := db.ListUser(r.Context(), userID)
 	if err != nil {
-		http.Error(w, "Failed to delete user", http.StatusBadRequest)
+		http.Error(w, "Failed to get user", http.StatusBadRequest)
 		return
 	}
-	res := pkg.DefaultResponse()
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
 
-	err = json.NewEncoder(w).Encode(&res)
+	w.Header().Set("Content-Type", "application/json")
+	err = json.NewEncoder(w).Encode(user)
 	if err != nil {
 		http.Error(w, "Failed to encode response", http.StatusInternalServerError)
+		return
 	}
 }
