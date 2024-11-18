@@ -11,8 +11,8 @@ CREATE TABLE messages (
 
 CREATE TABLE users (
   id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-  username VARCHAR(80) NOT NULL,
-  email VARCHAR(90) NOT NULL,
+  username VARCHAR(80) NOT NULL UNIQUE,
+  email VARCHAR(90) NOT NULL UNIQUE,
   auth BOOLEAN NOT NULL,
   hash VARCHAR(255) NOT NULL,
   created_at TIMESTAMPTZ NOT NULL,
