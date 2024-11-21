@@ -9,7 +9,6 @@ import (
 )
 
 var (
-	addr       = os.Getenv("API_ADDR")
 	dbHost     = os.Getenv("DB_HOST")
 	dbPort     = os.Getenv("DB_PORT")
 	dbUser     = os.Getenv("DB_USER")
@@ -25,7 +24,7 @@ func InitConfigs() error {
 	if err != nil {
 		return err
 	}
-	err = api.InitAPI(":" + addr)
+	err = api.InitAPI()
 	if err != nil {
 		return err
 	}
