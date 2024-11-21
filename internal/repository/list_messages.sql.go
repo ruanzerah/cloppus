@@ -12,9 +12,10 @@ import (
 )
 
 const listMessages = `-- name: ListMessages :many
-SELECT id, owner, subject, content, likes, created_at, updated_at, deleted_at
-  FROM messages
-  WHERE id = $1
+SELECT m.id, m.owner, m.subject, m.content, m.likes, m.created_at, m.updated_at, m.deleted_at
+  FROM messages m
+  JOIN users u ON m.id = u.id
+  WHERE u.id = $1
 `
 
 func (q *Queries) ListMessages(ctx context.Context, id uuid.UUID) ([]Message, error) {

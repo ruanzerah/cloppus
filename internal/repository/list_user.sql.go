@@ -12,7 +12,7 @@ import (
 )
 
 const listUser = `-- name: ListUser :one
-SELECT id, username, email, auth, hash, created_at, updated_at, deleted_at
+SELECT id, username, email, created_at, updated_at, deleted_at
   FROM users
   WHERE id = $1
 `
@@ -24,8 +24,6 @@ func (q *Queries) ListUser(ctx context.Context, id uuid.UUID) (User, error) {
 		&i.ID,
 		&i.Username,
 		&i.Email,
-		&i.Auth,
-		&i.Hash,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.DeletedAt,

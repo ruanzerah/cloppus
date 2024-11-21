@@ -15,13 +15,13 @@ services:
       - cloppi
     volumes:
       - .:/app
-
+    env_file: .env
   cloppi:
     image: postgres:16
     container_name: postgres
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: cloppi
     volumes:
       - db_data:/var/lib/postgresql/data

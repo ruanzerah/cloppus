@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
 	"github.com/ruanzerah/cloppus/internal/repository"
 	"github.com/ruanzerah/cloppus/pkg"
@@ -12,7 +13,7 @@ import (
 func createMessage(w http.ResponseWriter, r *http.Request) {
 	db := &repository.Queries{}
 
-	pathID := r.PathValue("id")
+	pathID := chi.URLParam(r, "id")
 	userID, err := uuid.Parse(pathID)
 	if err != nil {
 		http.Error(w, "Invalid ID format", http.StatusBadRequest)
@@ -29,11 +30,10 @@ func createMessage(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid request body", http.StatusBadRequest)
 		return
 	}
-	if messageBody.Subject == "" || messageBody.Content == "" {
-		http.Error(w, "missing subject or content", http.StatusBadRequest)
+	if err := pkg.ValidateMessage(&messageBody); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-
 	err = db.CreateMessage(r.Context(), repository.CreateMessageParams{
 		Owner:   user.Username,
 		Subject: messageBody.Subject,
@@ -44,10 +44,8 @@ func createMessage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	res := pkg.DefaultResponse()
-	w.Header().Set("Content-Type", "application/json")
-	err = json.NewEncoder(w).Encode(&res)
-	if err != nil {
-		http.Error(w, "Failed to encode response", http.StatusInternalServerError)
+	if err := pkg.WriteJSON(w, http.StatusOK, res); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 }

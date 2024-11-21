@@ -11,23 +11,16 @@ import (
 
 const createUser = `-- name: CreateUser :exec
 INSERT INTO users (
-  username, email, auth , hash
-) VALUES ( $1, $2 ,$3 ,$4 )
+  username, email
+) VALUES ( $1, $2 )
 `
 
 type CreateUserParams struct {
 	Username string `json:"username"`
 	Email    string `json:"email"`
-	Auth     bool   `json:"auth"`
-	Hash     string `json:"hash"`
 }
 
 func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) error {
-	_, err := q.db.Exec(ctx, createUser,
-		arg.Username,
-		arg.Email,
-		arg.Auth,
-		arg.Hash,
-	)
+	_, err := q.db.Exec(ctx, createUser, arg.Username, arg.Email)
 	return err
 }
