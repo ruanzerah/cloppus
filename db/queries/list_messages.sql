@@ -1,4 +1,5 @@
 -- name: ListMessages :many
-SELECT *
-  FROM messages
-  WHERE id = $1;
+SELECT m.*
+  FROM messages m
+  JOIN users u ON m.id = u.id
+  WHERE u.id = $1;
