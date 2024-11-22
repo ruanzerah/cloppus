@@ -23,7 +23,7 @@ func deleteMessage(w http.ResponseWriter, r *http.Request, queries *repository.Q
 		http.Error(w, "Failed to delete message", http.StatusBadRequest)
 		return
 	}
-	if err := pkg.WriteJSON(w, http.StatusOK, pkg.DefaultResponse()); err != nil {
+	if err := pkg.WriteJSON(w, http.StatusOK, "DELETE MESSAGE SUCCESS"); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}

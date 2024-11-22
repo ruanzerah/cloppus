@@ -18,7 +18,7 @@ func createMessage(w http.ResponseWriter, r *http.Request, queries *repository.Q
 		http.Error(w, "Invalid ID format", http.StatusBadRequest)
 		return
 	}
-	user, err := queries.ListUser(r.Context(), userID)
+	user, err := queries.ListUserById(r.Context(), userID)
 	if err != nil {
 		http.Error(w, "Failed to find user", http.StatusBadRequest)
 		return
@@ -43,8 +43,7 @@ func createMessage(w http.ResponseWriter, r *http.Request, queries *repository.Q
 		http.Error(w, "Failed to create message", http.StatusInternalServerError)
 		return
 	}
-	res := pkg.DefaultResponse()
-	if err := pkg.WriteJSON(w, http.StatusOK, res); err != nil {
+	if err := pkg.WriteJSON(w, http.StatusOK, messageBody); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}

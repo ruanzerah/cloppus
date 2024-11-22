@@ -18,7 +18,7 @@ func listUser(w http.ResponseWriter, r *http.Request, queries *repository.Querie
 		return
 	}
 
-	user, err := queries.ListUser(r.Context(), userID)
+	user, err := queries.ListUserById(r.Context(), userID)
 	if err != nil {
 		http.Error(w, "Failed to get user", http.StatusBadRequest)
 		return

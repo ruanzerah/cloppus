@@ -25,7 +25,16 @@ services:
       POSTGRES_DB: cloppi
     volumes:
       - db_data:/var/lib/postgresql/data
-      - ./db/migrations/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+      - ./db/migrations:/docker-entrypoint-initdb.d
+  migrate:
+    image: migrate/migrate
+    depends_on:
+      - cloppi
+    environment:
+      DB_URL: ${DB_URL}
+    entrypoint: ["sh", "-c", "migrate -path /migrations -database ${DB_URL} up"]
+    volumes:
+      - ./db/migrations:/migrations
 
 volumes:
   db_data:

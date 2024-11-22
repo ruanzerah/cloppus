@@ -23,7 +23,7 @@ func likeMessage(w http.ResponseWriter, r *http.Request, queries *repository.Que
 		return
 	}
 
-	if err := pkg.WriteJSON(w, http.StatusOK, pkg.DefaultResponse()); err != nil {
+	if err := pkg.WriteJSON(w, http.StatusOK, "LIKE"); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}

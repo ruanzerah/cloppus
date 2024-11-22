@@ -14,7 +14,7 @@ func RegisterUserRoutes(r chi.Router, queries *repository.Queries) {
 		r.Get("/{id}", func(w http.ResponseWriter, r *http.Request) {
 			listUser(w, r, queries)
 		})
-		r.Get("/", func(w http.ResponseWriter, r *http.Request) {
+		r.Post("/", func(w http.ResponseWriter, r *http.Request) {
 			createUser(w, r, queries)
 		})
 		r.Delete("/{id}", func(w http.ResponseWriter, r *http.Request) {

@@ -11,14 +11,33 @@ import (
 	"github.com/google/uuid"
 )
 
-const listUser = `-- name: ListUser :one
+const listUserById = `-- name: ListUserById :one
 SELECT id, username, email, created_at, updated_at
   FROM users
   WHERE id = $1
 `
 
-func (q *Queries) ListUser(ctx context.Context, id uuid.UUID) (User, error) {
-	row := q.db.QueryRow(ctx, listUser, id)
+func (q *Queries) ListUserById(ctx context.Context, id uuid.UUID) (User, error) {
+	row := q.db.QueryRow(ctx, listUserById, id)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.Username,
+		&i.Email,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const listUserByName = `-- name: ListUserByName :one
+SELECT id, username, email, created_at, updated_at
+  FROM users
+  WHERE username = $1
+`
+
+func (q *Queries) ListUserByName(ctx context.Context, username string) (User, error) {
+	row := q.db.QueryRow(ctx, listUserByName, username)
 	var i User
 	err := row.Scan(
 		&i.ID,

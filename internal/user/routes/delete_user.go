@@ -23,8 +23,8 @@ func deleteUser(w http.ResponseWriter, r *http.Request, queries *repository.Quer
 		http.Error(w, "Failed to delete user", http.StatusBadRequest)
 		return
 	}
-	res := pkg.DefaultResponse()
-	if err := pkg.WriteJSON(w, http.StatusOK, res); err != nil {
+
+	if err := pkg.WriteJSON(w, http.StatusOK, "DELETE USER SUCCESS"); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}

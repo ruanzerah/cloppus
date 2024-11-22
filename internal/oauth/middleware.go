@@ -25,11 +25,14 @@ var OauthConfig = &oauth2.Config{
 	Scopes:       []string{"user"},
 }
 
+type GithubEmail struct {
+	Email   string `json:"email"`
+	Primary bool   `json:"primary"`
+}
 type GitHubUser struct {
 	Login     string `json:"login"`
 	ID        int    `json:"id"`
 	AvatarURL string `json:"avatar_url"`
-	Email     string `json:"email"`
 }
 
 func AuthMiddleware(next http.Handler) http.Handler {
