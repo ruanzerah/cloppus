@@ -9,8 +9,7 @@ import (
 	"github.com/ruanzerah/cloppus/pkg"
 )
 
-func deleteMessage(w http.ResponseWriter, r *http.Request) {
-	db := &repository.Queries{}
+func deleteMessage(w http.ResponseWriter, r *http.Request, queries *repository.Queries) {
 	pathID := chi.URLParam(r, "id")
 
 	messageID, err := uuid.Parse(pathID)
@@ -19,7 +18,7 @@ func deleteMessage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = db.DeleteMessage(r.Context(), messageID)
+	err = queries.DeleteMessage(r.Context(), messageID)
 	if err != nil {
 		http.Error(w, "Failed to delete message", http.StatusBadRequest)
 		return

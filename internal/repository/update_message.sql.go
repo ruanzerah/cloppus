@@ -14,9 +14,10 @@ import (
 const updateMessage = `-- name: UpdateMessage :one
 UPDATE messages
   SET subject = $3,
-  content = $4
+  content = $4,
+  updated_at = CURRENT_TIMESTAMP
   WHERE id = $1 AND owner = $2
-  RETURNING id, owner, subject, content, likes, created_at, updated_at, deleted_at
+  RETURNING id, owner, subject, content, likes, created_at, updated_at
 `
 
 type UpdateMessageParams struct {
@@ -42,7 +43,6 @@ func (q *Queries) UpdateMessage(ctx context.Context, arg UpdateMessageParams) (M
 		&i.Likes,
 		&i.CreatedAt,
 		&i.UpdatedAt,
-		&i.DeletedAt,
 	)
 	return i, err
 }

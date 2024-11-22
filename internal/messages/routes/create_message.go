@@ -3,6 +3,7 @@ package routes
 import (
 	"encoding/json"
 	"net/http"
+	"time"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
@@ -10,16 +11,14 @@ import (
 	"github.com/ruanzerah/cloppus/pkg"
 )
 
-func createMessage(w http.ResponseWriter, r *http.Request) {
-	db := &repository.Queries{}
-
+func createMessage(w http.ResponseWriter, r *http.Request, queries *repository.Queries) {
 	pathID := chi.URLParam(r, "id")
 	userID, err := uuid.Parse(pathID)
 	if err != nil {
 		http.Error(w, "Invalid ID format", http.StatusBadRequest)
 		return
 	}
-	user, err := db.ListUser(r.Context(), userID)
+	user, err := queries.ListUser(r.Context(), userID)
 	if err != nil {
 		http.Error(w, "Failed to find user", http.StatusBadRequest)
 		return
@@ -34,10 +33,11 @@ func createMessage(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	err = db.CreateMessage(r.Context(), repository.CreateMessageParams{
-		Owner:   user.Username,
-		Subject: messageBody.Subject,
-		Content: messageBody.Content,
+	err = queries.CreateMessage(r.Context(), repository.CreateMessageParams{
+		Owner:     user.Username,
+		Subject:   messageBody.Subject,
+		Content:   messageBody.Content,
+		CreatedAt: time.Now(),
 	})
 	if err != nil {
 		http.Error(w, "Failed to create message", http.StatusInternalServerError)

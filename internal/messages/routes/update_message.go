@@ -10,8 +10,7 @@ import (
 	"github.com/ruanzerah/cloppus/pkg"
 )
 
-func updateMessage(w http.ResponseWriter, r *http.Request) {
-	db := &repository.Queries{}
+func updateMessage(w http.ResponseWriter, r *http.Request, queries *repository.Queries) {
 	pathId := chi.URLParam(r, "id")
 	messageId, err := uuid.Parse(pathId)
 	if err != nil {
@@ -24,7 +23,7 @@ func updateMessage(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	message, err := db.UpdateMessage(r.Context(), repository.UpdateMessageParams{
+	message, err := queries.UpdateMessage(r.Context(), repository.UpdateMessageParams{
 		ID:      messageId,
 		Owner:   newMessage.Owner,
 		Subject: newMessage.Subject,

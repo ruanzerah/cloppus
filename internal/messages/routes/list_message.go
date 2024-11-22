@@ -9,9 +9,7 @@ import (
 	"github.com/ruanzerah/cloppus/pkg"
 )
 
-func listMessage(w http.ResponseWriter, r *http.Request) {
-	db := &repository.Queries{}
-
+func listMessage(w http.ResponseWriter, r *http.Request, queries *repository.Queries) {
 	pathID := chi.URLParam(r, "id")
 	userID, err := uuid.Parse(pathID)
 	if err != nil {
@@ -19,7 +17,7 @@ func listMessage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	messages, err := db.ListMessages(r.Context(), userID)
+	messages, err := queries.ListMessages(r.Context(), userID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return

@@ -7,15 +7,14 @@ import (
 	"github.com/jackc/pgx/v5"
 )
 
-func InitDatabase(db_url string) error {
+func InitDatabase(db_url string) (*pgx.Conn, error) {
 	if db_url == "" {
-		return fmt.Errorf("DB url is not configured")
+		return nil, fmt.Errorf("DB url is not configured")
 	}
 
 	conn, err := pgx.Connect(context.Background(), db_url)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	defer conn.Close(context.Background())
-	return nil
+	return conn, nil
 }

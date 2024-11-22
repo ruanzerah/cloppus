@@ -7,20 +7,28 @@ package repository
 
 import (
 	"context"
+	"time"
 )
 
 const createUser = `-- name: CreateUser :exec
 INSERT INTO users (
-  username, email
-) VALUES ( $1, $2 )
+  username, email, created_at, updated_at
+) VALUES ( $1, $2, $3, $4 )
 `
 
 type CreateUserParams struct {
-	Username string `json:"username"`
-	Email    string `json:"email"`
+	Username  string    `json:"username"`
+	Email     string    `json:"email"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
 }
 
 func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) error {
-	_, err := q.db.Exec(ctx, createUser, arg.Username, arg.Email)
+	_, err := q.db.Exec(ctx, createUser,
+		arg.Username,
+		arg.Email,
+		arg.CreatedAt,
+		arg.UpdatedAt,
+	)
 	return err
 }

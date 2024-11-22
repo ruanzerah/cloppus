@@ -7,21 +7,30 @@ package repository
 
 import (
 	"context"
+	"time"
 )
 
 const createMessage = `-- name: CreateMessage :exec
 INSERT INTO messages (
-  owner, subject, content
-) VALUES($1, $2, $3)
+  owner, subject, content, created_at, updated_at
+) VALUES($1, $2, $3, $4, $5 )
 `
 
 type CreateMessageParams struct {
-	Owner   string `json:"owner"`
-	Subject string `json:"subject"`
-	Content string `json:"content"`
+	Owner     string    `json:"owner"`
+	Subject   string    `json:"subject"`
+	Content   string    `json:"content"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
 }
 
 func (q *Queries) CreateMessage(ctx context.Context, arg CreateMessageParams) error {
-	_, err := q.db.Exec(ctx, createMessage, arg.Owner, arg.Subject, arg.Content)
+	_, err := q.db.Exec(ctx, createMessage,
+		arg.Owner,
+		arg.Subject,
+		arg.Content,
+		arg.CreatedAt,
+		arg.UpdatedAt,
+	)
 	return err
 }

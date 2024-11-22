@@ -9,8 +9,7 @@ import (
 	"github.com/ruanzerah/cloppus/pkg"
 )
 
-func likeMessage(w http.ResponseWriter, r *http.Request) {
-	db := &repository.Queries{}
+func likeMessage(w http.ResponseWriter, r *http.Request, queries *repository.Queries) {
 	pathId := chi.URLParam(r, "id")
 	messageId, err := uuid.Parse(pathId)
 	if err != nil {
@@ -18,7 +17,7 @@ func likeMessage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = db.LikeMessage(r.Context(), messageId)
+	err = queries.LikeMessage(r.Context(), messageId)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return

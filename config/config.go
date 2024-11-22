@@ -20,11 +20,11 @@ var (
 )
 
 func InitConfigs() error {
-	err := database.InitDatabase(dsn)
+	conn, err := database.InitDatabase(dsn)
 	if err != nil {
 		return err
 	}
-	err = api.InitAPI()
+	err = api.InitAPI(conn)
 	if err != nil {
 		return err
 	}

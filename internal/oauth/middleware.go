@@ -2,14 +2,12 @@ package oauth
 
 import (
 	"context"
-	"crypto/rand"
-	"encoding/base64"
-	"encoding/json"
 	"log"
 	"net/http"
 	"os"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/google/uuid"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/github"
 )
@@ -19,7 +17,7 @@ var (
 	clientSecret = os.Getenv("SECRET")
 )
 
-var oauthConfig = &oauth2.Config{
+var OauthConfig = &oauth2.Config{
 	ClientID:     clientID,
 	ClientSecret: clientSecret,
 	Endpoint:     github.Endpoint,
@@ -48,7 +46,7 @@ func AuthMiddleware(next http.Handler) http.Handler {
 
 		token := &oauth2.Token{AccessToken: tokenCookie.Value}
 		if !token.Valid() {
-			tokenSource := oauthConfig.TokenSource(context.Background(), token)
+			tokenSource := OauthConfig.TokenSource(context.Background(), token)
 			newToken, err := tokenSource.Token()
 			if err != nil {
 				http.Error(w, "Token refresh failed: "+err.Error(), http.StatusUnauthorized)
@@ -64,32 +62,12 @@ func AuthMiddleware(next http.Handler) http.Handler {
 			})
 		}
 
-		client := oauthConfig.Client(context.Background(), token)
-		resp, err := client.Get("https://api.github.com/user")
-		if err != nil {
-			http.Error(w, "Failed to fetch user info: "+err.Error(), http.StatusInternalServerError)
-			return
-		}
-		defer resp.Body.Close()
-
-		var user GitHubUser
-		if err := json.NewDecoder(resp.Body).Decode(&user); err != nil {
-			http.Error(w, "Failed to parse user info: "+err.Error(), http.StatusInternalServerError)
-			return
-		}
-
-		ctx := context.WithValue(r.Context(), "user", user)
-		next.ServeHTTP(w, r.WithContext(ctx))
+		next.ServeHTTP(w, r)
 	})
 }
 
 func generateStateToken() (string, error) {
-	// Generate a random state token
-	state := make([]byte, 16)
-	if _, err := rand.Read(state); err != nil {
-		return "", err
-	}
-	return base64.URLEncoding.EncodeToString(state), nil
+	return uuid.New().String(), nil
 }
 
 func RegisterAuthRoutes(r chi.Router) {
@@ -108,7 +86,7 @@ func RegisterAuthRoutes(r chi.Router) {
 			Secure:   true,
 			SameSite: http.SameSiteStrictMode,
 		})
-		url := oauthConfig.AuthCodeURL(state, oauth2.AccessTypeOffline)
+		url := OauthConfig.AuthCodeURL(state, oauth2.AccessTypeOffline)
 		http.Redirect(w, r, url, http.StatusTemporaryRedirect)
 	})
 
@@ -131,7 +109,7 @@ func RegisterAuthRoutes(r chi.Router) {
 			return
 		}
 		code := r.URL.Query().Get("code")
-		token, err := oauthConfig.Exchange(context.Background(), code)
+		token, err := OauthConfig.Exchange(context.Background(), code)
 		if err != nil {
 			http.Error(w, "Failed to exchange token: "+err.Error(), http.StatusInternalServerError)
 			return
@@ -144,5 +122,6 @@ func RegisterAuthRoutes(r chi.Router) {
 			HttpOnly: true,
 			Secure:   true,
 		})
+		http.Redirect(w, r, "/", http.StatusFound)
 	})
 }

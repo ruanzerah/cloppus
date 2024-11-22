@@ -9,8 +9,7 @@ import (
 	"github.com/ruanzerah/cloppus/pkg"
 )
 
-func deleteUser(w http.ResponseWriter, r *http.Request) {
-	db := &repository.Queries{}
+func deleteUser(w http.ResponseWriter, r *http.Request, queries *repository.Queries) {
 	pathID := chi.URLParam(r, "id")
 
 	userID, err := uuid.Parse(pathID)
@@ -19,7 +18,7 @@ func deleteUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = db.DeleteUser(r.Context(), userID)
+	err = queries.DeleteUser(r.Context(), userID)
 	if err != nil {
 		http.Error(w, "Failed to delete user", http.StatusBadRequest)
 		return

@@ -1,4 +1,4 @@
 -- name: CreateUser :exec
 INSERT INTO users (
-  username, email
-) VALUES ( $1, $2 );
+  username, email, created_at, updated_at
+) VALUES ( $1, $2, $3, $4 );

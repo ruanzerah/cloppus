@@ -9,8 +9,7 @@ import (
 	"github.com/ruanzerah/cloppus/pkg"
 )
 
-func listUser(w http.ResponseWriter, r *http.Request) {
-	db := &repository.Queries{}
+func listUser(w http.ResponseWriter, r *http.Request, queries *repository.Queries) {
 	pathID := chi.URLParam(r, "id")
 
 	userID, err := uuid.Parse(pathID)
@@ -19,7 +18,7 @@ func listUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user, err := db.ListUser(r.Context(), userID)
+	user, err := queries.ListUser(r.Context(), userID)
 	if err != nil {
 		http.Error(w, "Failed to get user", http.StatusBadRequest)
 		return
